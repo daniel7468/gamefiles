@@ -1,157 +1,3 @@
-# 5555 TCP — open this in Windows Firewall if clients can't connect
-
-# import pygame, sys
-# from settings import *
-# from level import Level
-
-# class Game:
-# 	def __init__(self):
-
-# 		# general setup
-# 		pygame.init()
-# 		self.screen = pygame.display.set_mode((WIDTH,HEIGTH))
-# 		pygame.display.set_caption('Game')
-# 		self.clock = pygame.time.Clock()
-
-# 		self.level = Level()
-
-# 		# sound 
-# 		main_sound = pygame.mixer.Sound('../audio/main.ogg')
-# 		main_sound.set_volume(0.5)
-# 		main_sound.play(loops = -1)
-	
-# 	def run(self):
-# 		while True:
-# 			for event in pygame.event.get():
-# 				if event.type == pygame.QUIT:
-# 					pygame.quit()
-# 					sys.exit()
-# 				if event.type == pygame.KEYDOWN:
-# 					if event.key == pygame.K_m:
-# 						self.level.toggle_menu()
-
-# 			self.screen.fill(WATER_COLOR)
-# 			self.level.run()
-# 			pygame.display.update()
-# 			self.clock.tick(FPS)
-
-# if __name__ == '__main__':
-# 	game = Game()
-# 	game.run()
-
-
-# import socket
-# import pickle
-# import pygame, sys
-# from settings import *
-# from level import Level
-
-# class Game:
-# 	def __init__(self):
-
-# 		# #stuff for server
-# 		# self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# 		# self.client.connect(("SERVER_IP_HERE", 5555))
-
-# 		# self.player_id = pickle.loads(self.client.recv(2048))
-# 		# self.other_players = {}
-
-# 		# general setup
-# 		pygame.init()
-# 		self.screen = pygame.display.set_mode((WIDTH, HEIGTH))
-# 		pygame.display.set_caption('Game')
-# 		self.clock = pygame.time.Clock()
-
-# 		# game state
-# 		self.state = "menu"  # menu, playing
-
-# 		self.level = None
-
-# 		# sound 
-# 		self.main_sound = pygame.mixer.Sound('../audio/main.ogg')
-# 		self.main_sound.set_volume(0.5)
-# 		self.main_sound.play(loops = -1)
-
-# 		# menu fonts
-# 		self.font_title = pygame.font.SysFont("arial", 80)
-# 		self.font_button = pygame.font.SysFont("arial", 40)
-
-# 	def draw_menu(self):
-# 		self.screen.fill((20, 20, 40))
-
-# 		# title
-# 		title = self.font_title.render("LARPERS SIMULATOR", True, "white")
-# 		title_rect = title.get_rect(center=(WIDTH // 2, HEIGTH // 3))
-# 		self.screen.blit(title, title_rect)
-
-# 		# buttons
-# 		mouse = pygame.mouse.get_pos()
-# 		clicked = pygame.mouse.get_pressed()
-
-# 		# START button
-# 		start_rect = pygame.Rect(WIDTH//2 - 100, HEIGTH//2, 200, 60)
-# 		quit_rect = pygame.Rect(WIDTH//2 - 100, HEIGTH//2 + 80, 200, 60)
-
-# 		# hover colors
-# 		start_color = "gray" if start_rect.collidepoint(mouse) else "darkgray"
-# 		quit_color = "gray" if quit_rect.collidepoint(mouse) else "darkgray"
-
-# 		pygame.draw.rect(self.screen, start_color, start_rect)
-# 		pygame.draw.rect(self.screen, quit_color, quit_rect)
-
-# 		start_text = self.font_button.render("START", True, "white")
-# 		quit_text = self.font_button.render("QUIT", True, "white")
-
-# 		self.screen.blit(start_text, start_text.get_rect(center=start_rect.center))
-# 		self.screen.blit(quit_text, quit_text.get_rect(center=quit_rect.center))
-
-		
-# 		if clicked[0]:
-# 			if start_rect.collidepoint(mouse):
-# 				self.start_game()
-# 			if quit_rect.collidepoint(mouse):
-# 				pygame.quit()
-# 				sys.exit()
-
-# 	def start_game(self):
-# 		self.state = "playing"
-# 		self.level = Level()
-
-# 	def run(self):
-# 		while True:
-# 			for event in pygame.event.get():
-# 				if event.type == pygame.QUIT:
-# 					pygame.quit()
-# 					sys.exit()
-
-# 				if self.state == "playing":
-# 					if event.type == pygame.KEYDOWN:
-# 						if event.key == pygame.K_m:
-# 							self.level.toggle_menu()
-
-# 			if self.state == "menu":
-# 				self.draw_menu()
-
-# 			elif self.state == "playing":
-# 				self.screen.fill(WATER_COLOR)
-				
-# 				# pos = self.level.player.rect.center
-# 				# self.client.send(pickle.dumps(pos))
-
-# 				# self.other_players = pickle.loads(self.client.recv(2048))
-
-# 				self.level.run()
-
-# 				# self.level.draw_multiplayer(self.other_players, self.player_id)
-
-# 			pygame.display.update()
-# 			self.clock.tick(FPS)
-
-# if __name__ == '__main__':
-# 	game = Game()
-# 	game.run()
-
-
 import socket
 import pickle
 import threading
@@ -160,10 +6,10 @@ import sys
 from settings import *
 from level import Level
  
-# ── network config ────────────────────────────────────────────────────────────
-SERVER_IP   = '192.168.1.205'
+#network config
+SERVER_IP   = '192.0.0.2'
 SERVER_PORT = 5555
-# ─────────────────────────────────────────────────────────────────────────────
+
  
  
 def _recv_exact(conn, n):
@@ -187,6 +33,7 @@ class NetworkClient:
  
         raw = _recv_exact(self.sock, 4096)
         self.player_id = pickle.loads(raw)
+
         print(f"[CLIENT] Assigned player id: {self.player_id}")
  
         self.other_players = {}
@@ -245,7 +92,7 @@ class Game:
         pygame.display.set_caption('Larpers Simulator')
         self.clock  = pygame.time.Clock()
  
-        # states: "menu" | "playing_solo" | "playing_multi" | "error"
+       #state opf menus
         self.state     = "menu"
         self.level     = None
         self.net       = None
@@ -259,7 +106,7 @@ class Game:
         self.font_button = pygame.font.SysFont("arial", 40)
         self.font_small  = pygame.font.SysFont("arial", 26)
  
-    # ── helpers ───────────────────────────────────────────────────────────────
+    
     def _draw_button(self, rect, label, hover_color="gray", base_color="darkgray"):
         mouse = pygame.mouse.get_pos()
         color = hover_color if rect.collidepoint(mouse) else base_color
@@ -269,7 +116,7 @@ class Game:
         self.screen.blit(text, text.get_rect(center=rect.center))
         return rect.collidepoint(mouse)
  
-    # ── menu ──────────────────────────────────────────────────────────────────
+    
     def draw_menu(self):
         self.screen.fill((20, 20, 40))
  
@@ -294,7 +141,6 @@ class Game:
             elif quit_hovered:
                 self._shutdown()
  
-    # ── error screen ──────────────────────────────────────────────────────────
     def draw_error(self):
         self.screen.fill((40, 10, 10))
         msg1 = self.font_button.render("Could not connect to server!", True, "red")
@@ -304,12 +150,12 @@ class Game:
         self.screen.blit(msg2, msg2.get_rect(center=(WIDTH // 2, HEIGTH // 2)))
         self.screen.blit(msg3, msg3.get_rect(center=(WIDTH // 2, HEIGTH // 2 + 50)))
  
-    # ── start singleplayer ────────────────────────────────────────────────────
+    
     def _start_singleplayer(self):
         self.level = Level()
         self.state = "playing_solo"
  
-    # ── start multiplayer ─────────────────────────────────────────────────────
+    
     def _connect_and_start(self):
         try:
             self.net = NetworkClient(SERVER_IP, SERVER_PORT)
@@ -320,7 +166,7 @@ class Game:
         self.level = Level()
         self.state = "playing_multi"
  
-    # ── player state for networking ───────────────────────────────────────────
+    
     @staticmethod
     def _player_state(player) -> dict:
         return {
@@ -330,7 +176,7 @@ class Game:
             'max_health': player.stats['health'],
         }
  
-    # ── draw remote players ───────────────────────────────────────────────────
+    
     def _draw_remote_players(self, others: dict):
         offset  = self.level.visible_sprites.offset
         colours = [(70, 130, 200), (200, 80, 80), (80, 200, 100), (200, 180, 50)]
@@ -353,7 +199,7 @@ class Game:
             label = self.font_small.render(f"P{pid}", True, "white")
             self.screen.blit(label, label.get_rect(midbottom=(sx, sy - 34)))
  
-    # ── main loop ─────────────────────────────────────────────────────────────
+   
     def run(self):
         while True:
             for event in pygame.event.get():

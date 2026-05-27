@@ -26,6 +26,7 @@ class Level:
 		# display
 		self.display_surface = pygame.display.get_surface()
 		self.game_paused = False
+		self.player_dead = False
 
 		# groups
 		self.visible_sprites = YSortCameraGroup()
@@ -142,6 +143,9 @@ class Level:
 	def damage_player(self, amount, attack_type):
 		if self.player.vulnerable:
 			self.player.health -= amount
+			if self.player.health <= 0:
+				self.player.health = 0
+				self.player_dead = True
 			self.player.vulnerable = False
 			self.player.hurt_time = pygame.time.get_ticks()
 			self.animation_player.create_particles(attack_type, self.player.rect.center, [self.visible_sprites])
@@ -157,7 +161,7 @@ class Level:
 
 	def draw_pause_menu(self):
 
-		# dark background
+		#  dark background
 		overlay = pygame.Surface((WIDTH, HEIGTH))
 		overlay.set_alpha(180)
 		overlay.fill((0, 0, 0))
@@ -166,11 +170,11 @@ class Level:
 		mouse = pygame.mouse.get_pos()
 		clicked = pygame.mouse.get_pressed()
 
-		# title
+		#title
 		title = self.font_big.render("PAUSED", True, "white")
 		self.display_surface.blit(title, title.get_rect(center=(WIDTH//2, HEIGTH//3)))
 
-		# buttons
+		 #buttons
 		resume = pygame.Rect(WIDTH//2 - 100, HEIGTH//2, 200, 60)
 		quit_btn = pygame.Rect(WIDTH//2 - 100, HEIGTH//2 + 80, 200, 60)
 
@@ -186,7 +190,7 @@ class Level:
 		self.display_surface.blit(resume_text, resume_text.get_rect(center=resume.center))
 		self.display_surface.blit(quit_text, quit_text.get_rect(center=quit_btn.center))
 
-		# clicks
+		  #clicks
 		if clicked[0]:
 			if resume.collidepoint(mouse):
 				self.game_paused = False
@@ -195,17 +199,68 @@ class Level:
 				pygame.quit()
 				sys.exit()
 
+	def draw_death_screen(self):
+		overlay = pygame.Surface((WIDTH,HEIGTH))
+		overlay.set_alpha(200)
+		overlay.fill((0, 0, 0))
+		self.display_surface.blit(overlay, (0, 0))
+
+		mouse = pygame.mouse.get_pos()
+		clicked = pygame.mouse.get_pressed()
+
+		title = self.font_big.render("YOU DIED", True, "red")
+		self.display_surface.blit(title, title.get_rect(center=(WIDTH // 2, HEIGTH // 3)))
+
+		restart_btn = pygame.Rect(WIDTH//2 - 120, HEIGTH//2, 240, 60)
+		quit_btn = pygame.Rect(WIDTH//2 - 120, HEIGTH//2 + 90, 240, 60)
+
+		restart_color = "gray" if restart_btn.collidepoint(mouse) else "darkgray"
+		quit_color = "red" if quit_btn.collidepoint(mouse) else "darkred"
+
+		pygame.draw.rect(self.display_surface, restart_color, restart_btn)
+		pygame.draw.rect(self.display_surface, quit_color, quit_btn)
+
+		restart_text = self.font_small.render("RESTART", True, "white")
+		quit_text = self.font_small.render("QUIT", True, "white")
+
+		self.display_surface.blit(
+		restart_text,
+		restart_text.get_rect(center=restart_btn.center)
+		)
+
+		self.display_surface.blit(
+		quit_text,
+		quit_text.get_rect(center=quit_btn.center)
+		)
+
+		if clicked[0]:
+
+			if restart_btn.collidepoint(mouse):
+				self.__init__()
+
+			if quit_btn.collidepoint(mouse):
+				pygame.quit()
+				sys.exit()
+
+
+
 	def run(self):
 
 		self.visible_sprites.custom_draw(self.player)
 		self.ui.display(self.player)
 
 		keys = pygame.key.get_pressed()
-		if keys[pygame.K_ESCAPE]:
-			self.game_paused = True
 
-		if self.game_paused:
+		if not self.player_dead:
+			if keys[pygame.K_ESCAPE]:
+				self.game_paused = True
+
+		if self.player_dead:
+			self.draw_death_screen()
+
+		elif self.game_paused:
 			self.draw_pause_menu()
+
 		else:
 			self.visible_sprites.update()
 			self.visible_sprites.enemy_update(self.player)

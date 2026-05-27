@@ -6,21 +6,21 @@ from support import *
 class Enemy(Entity):
 	def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player,trigger_death_particles,add_exp):
 
-		# general setup
+		#general setup
 		super().__init__(groups)
 		self.sprite_type = 'enemy'
 
-		# graphics setup
+		#graphics setup
 		self.import_graphics(monster_name)
 		self.status = 'idle'
 		self.image = self.animations[self.status][self.frame_index]
 
-		# movement
+		  #movement
 		self.rect = self.image.get_rect(topleft = pos)
 		self.hitbox = self.rect.inflate(0,-10)
 		self.obstacle_sprites = obstacle_sprites
 
-		# stats
+		 #stats
 		self.monster_name = monster_name
 		monster_info = monster_data[self.monster_name]
 		self.health = monster_info['health']
@@ -32,7 +32,7 @@ class Enemy(Entity):
 		self.notice_radius = monster_info['notice_radius']
 		self.attack_type = monster_info['attack_type']
 
-		# player interaction
+		#player interaction
 		self.can_attack = True
 		self.attack_time = None
 		self.attack_cooldown = 400
@@ -40,12 +40,12 @@ class Enemy(Entity):
 		self.trigger_death_particles = trigger_death_particles
 		self.add_exp = add_exp
 
-		# invincibility timer
+		#ivincibility timer
 		self.vulnerable = True
 		self.hit_time = None
 		self.invincibility_duration = 300
 
-		# sounds
+		#sounds
 		self.death_sound = pygame.mixer.Sound('../audio/death.wav')
 		self.hit_sound = pygame.mixer.Sound('../audio/hit.wav')
 		self.attack_sound = pygame.mixer.Sound(monster_info['attack_sound'])

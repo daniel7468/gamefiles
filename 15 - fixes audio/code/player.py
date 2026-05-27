@@ -75,6 +75,12 @@ class Player(Entity):
 			elif keys[pygame.K_s]:
 				self.direction.y = 1
 				self.status = 'down'
+			elif keys[pygame.K_UP]:
+				self.direction.y = -1
+				self.status = 'up'	
+			elif keys[pygame.K_DOWN]:
+				self.direction.y = 1
+				self.status = 'down'
 			else:
 				self.direction.y = 0
 
@@ -84,6 +90,12 @@ class Player(Entity):
 			elif keys[pygame.K_a]:
 				self.direction.x = -1
 				self.status = 'left'
+			elif keys[pygame.K_LEFT]:
+				self.direction.x = -1
+				self.status = 'left'
+			elif keys[pygame.K_RIGHT]:
+				self.direction.x = 1
+				self.status = 'right'
 			else:
 				self.direction.x = 0
 
@@ -100,6 +112,7 @@ class Player(Entity):
 				self.attack_time = pygame.time.get_ticks()
 				style = list(magic_data.keys())[self.magic_index]
 				strength = list(magic_data.values())[self.magic_index]['strength'] + self.stats['magic']
+				# cost = 0
 				cost = list(magic_data.values())[self.magic_index]['cost']
 				self.create_magic(style,strength,cost)
 
@@ -127,7 +140,7 @@ class Player(Entity):
 
 	def get_status(self):
 
-		# idle status
+		#idle status
 		if self.direction.x == 0 and self.direction.y == 0:
 			if not 'idle' in self.status and not 'attack' in self.status:
 				self.status = self.status + '_idle'
